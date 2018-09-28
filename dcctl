@@ -1,0 +1,33 @@
+#!/bin/bash
+
+DC_ROOT='/var/docker-compose'
+
+DC_ACTIONS=$(cat <<'_EOF_'
+restart
+logs --timestamps --follow
+rm --force --stop
+build
+up -d
+_EOF_
+)
+DC_YML='docker-compose.yml'
+PECO='peco --on-cancel error'
+DO_RESET_ESCSEQ() {
+    echo -ne '\e[0m'
+}
+
+DC_CONFIGS=$( \
+    find "$DC_ROOT" -type f -name "$DC_YML" \
+    | sed -e "s|^$DC_ROOT/||" -e "s|/$DC_YML\$||" \
+)
+
+DO_RESET_ESCSEQ
+TARGET=$( echo "$DC_CONFIGS" | $PECO --prompt '[DCCTL]' )
+DO_RESET_ESCSEQ
+
+TARGET_DIR="$DC_ROOT/$TARGET"
+
+ACTION=$( echo "$DC_ACTIONS" | $PECO --prompt "[DCCTL] $TARGET" )
+DO_RESET_ESCSEQ
+
+( cd $TARGET_DIR && docker-compose $ACTION )
