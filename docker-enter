@@ -1,0 +1,2 @@
+#!/bin/bash
+docker exec -it $( docker ps | tail -n +2 | peco | cut -d ' ' -f1 ) /bin/bash
