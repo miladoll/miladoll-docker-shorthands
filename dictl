@@ -1,0 +1,25 @@
+#!/bin/bash
+
+DI_ACTIONS=$(cat <<'_EOF_'
+docker rmi
+_EOF_
+)
+PECO='peco --on-cancel error'
+DO_RESET_ESCSEQ() {
+    echo -ne '\e[0m'
+    stty sane
+}
+
+DI_IMGS=$( \
+    docker images | tail --lines=+2
+)
+
+DO_RESET_ESCSEQ
+TARGET=$( echo "$DI_IMGS" | $PECO --prompt '[DICTL]' | awk '{print $3}')
+DO_RESET_ESCSEQ
+
+ACTION=$( echo "$DI_ACTIONS" | $PECO --prompt "[DICTL] $TARGET" )
+DO_RESET_ESCSEQ
+
+$ACTION $TARGET
+

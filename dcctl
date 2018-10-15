@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DC_ROOT='/var/docker-compose'
 
 DC_ACTIONS=$(cat <<'_EOF_'
@@ -19,6 +21,7 @@ DO_RESET_ESCSEQ() {
 DC_CONFIGS=$( \
     find "$DC_ROOT" -type f -name "$DC_YML" \
     | sed -e "s|^$DC_ROOT/||" -e "s|/$DC_YML\$||" \
+    | grep -v '/_'
 )
 
 DO_RESET_ESCSEQ
